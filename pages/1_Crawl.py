@@ -75,10 +75,10 @@ else:
             else:
                 st.error(f"Key KHÔNG dùng được. {info['status'] or 'N/A'} — {info['message']}")
 
-    # Nút DỪNG ở sidebar
-    if st.sidebar.button("🛑 Dừng cào", use_container_width=True, key="btn_stop_sidebar"):
-        if stop_crawl_thread():
-            st.rerun()
+# Nút DỪNG ở sidebar
+if st.sidebar.button("🛑 Dừng cào", use_container_width=True, key="btn_stop_sidebar"):
+    if stop_crawl_thread():
+        st.rerun()
 
 # ─────────────────────────────────────────────────────────
 # Khu nhập thông tin tìm kiếm (không form để sidebar tự do callback)
