@@ -25,36 +25,60 @@ st.title("🗺️ Cào địa điểm từ Google Maps")
 # ─────────────────────────────────────────────────────────
 # Sidebar: SERPER API Key + nút Dừng
 # ─────────────────────────────────────────────────────────
-with st.sidebar.expander("🔐 SERPER API Key", expanded=(get_serper_api_key() is None)):
-    current_key = get_serper_api_key() or ""
-    api_in = st.text_input(
-        "Nhập SERPER_API_KEY",
-        value=current_key,
-        type="password",
-        placeholder="Dán API key tại đây",
-        key="inp_serper_key_page",
-    )
-    colk1, colk2 = st.columns([1, 1])
-    if colk1.button("💾 Lưu", use_container_width=True, key="btn_save_serper_page"):
-        if not api_in.strip():
-            st.warning("Vui lòng nhập SERPER_API_KEY trước khi lưu.")
-        else:
-            set_serper_api_key(api_in.strip(), persist=True)
-            if "SERPER_SAVE_ERROR" in st.session_state:
-                st.error(f"Không lưu được vào .env: {st.session_state['SERPER_SAVE_ERROR']}")
-            else:
-                st.success("Đã lưu SERPER_API_KEY (.env).")
-    if colk2.button("🔎 Kiểm tra", use_container_width=True, key="btn_check_serper_page"):
-        info = check_serper_key()
-        if info["ok"]:
-            st.success(f"API key hợp lệ. Remaining: {info.get('remaining') or '—'}")
-        else:
-            st.error(f"Key KHÔNG dùng được. {info['status'] or 'N/A'} — {info['message']}")
 
-# Nút DỪNG ở sidebar
-if st.sidebar.button("🛑 Dừng cào", use_container_width=True, key="btn_stop_sidebar"):
-    if stop_crawl_thread():
-        st.rerun()
+# Kiểm tra xem có chạy trên Streamlit Cloud không
+def is_streamlit_cloud():
+    """Detect nếu app đang chạy trên Streamlit Cloud"""
+    try:
+        return hasattr(st, "secrets") and len(st.secrets) > 0
+    except:
+        return False
+
+is_cloud = is_streamlit_cloud()
+current_key = get_serper_api_key()
+
+# Nếu đang trên Cloud và đã có key trong secrets → ẩn phần nhập key
+if is_cloud and current_key:
+    with st.sidebar:
+        st.success("🔐 API Key đã được cấu hình")
+        if st.button("🔎 Kiểm tra API Key", use_container_width=True):
+            info = check_serper_key()
+            if info["ok"]:
+                st.success(f"✅ API key hợp lệ. Remaining: {info.get('remaining') or '—'}")
+            else:
+                st.error(f"❌ Key KHÔNG dùng được\n\n{info['status'] or 'N/A'} — {info['message']}")
+else:
+    # Local hoặc chưa có key → hiện đầy đủ form nhập
+    with st.sidebar.expander("🔐 SERPER API Key", expanded=(get_serper_api_key() is None)):
+        current_key = get_serper_api_key() or ""
+        api_in = st.text_input(
+            "Nhập SERPER_API_KEY",
+            value=current_key,
+            type="password",
+            placeholder="Dán API key tại đây",
+            key="inp_serper_key_page",
+        )
+        colk1, colk2 = st.columns([1, 1])
+        if colk1.button("💾 Lưu", use_container_width=True, key="btn_save_serper_page"):
+            if not api_in.strip():
+                st.warning("Vui lòng nhập SERPER_API_KEY trước khi lưu.")
+            else:
+                set_serper_api_key(api_in.strip(), persist=True)
+                if "SERPER_SAVE_ERROR" in st.session_state:
+                    st.error(f"Không lưu được vào .env: {st.session_state['SERPER_SAVE_ERROR']}")
+                else:
+                    st.success("Đã lưu SERPER_API_KEY (.env).")
+        if colk2.button("🔎 Kiểm tra", use_container_width=True, key="btn_check_serper_page"):
+            info = check_serper_key()
+            if info["ok"]:
+                st.success(f"API key hợp lệ. Remaining: {info.get('remaining') or '—'}")
+            else:
+                st.error(f"Key KHÔNG dùng được. {info['status'] or 'N/A'} — {info['message']}")
+
+    # Nút DỪNG ở sidebar
+    if st.sidebar.button("🛑 Dừng cào", use_container_width=True, key="btn_stop_sidebar"):
+        if stop_crawl_thread():
+            st.rerun()
 
 # ─────────────────────────────────────────────────────────
 # Khu nhập thông tin tìm kiếm (không form để sidebar tự do callback)

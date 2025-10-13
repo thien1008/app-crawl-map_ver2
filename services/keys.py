@@ -35,7 +35,7 @@ def set_serper_api_key(value: str, persist: bool = True) -> None:
 def check_serper_key() -> dict:
     """
     Gửi 1 request nhẹ tới Serper để kiểm tra key.
-    Trả về dict: { ok: bool, status: int|None, message: str, remaining: str|None }
+    Trả về dict: { ok: bool, status:1 int|None, message: str, remaining: str|None }
     Lưu ý: Serper KHÔNG công bố API quota chính thức → remaining có thể None.
     """
     key = get_serper_api_key()
