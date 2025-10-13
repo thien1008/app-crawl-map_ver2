@@ -155,3 +155,12 @@ if path and Path(path).exists():
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
     )
+
+st.markdown("""
+<style>
+a[data-testid="stDeployButton"] { display: none !important; }
+button[title="Deploy this app"] { display: none !important; }
+button[aria-label="Deploy this app"] { display: none !important; }
+[data-testid="stToolbar"] { display: none !important; }   /* đã bật */
+</style>
+""", unsafe_allow_html=True)
