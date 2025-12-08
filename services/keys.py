@@ -14,6 +14,12 @@ def get_serper_api_key() -> str | None:
         return os.getenv("SERPER_API_KEY")
     if hasattr(st, "secrets") and "SERPER_API_KEY" in st.secrets:
         return st.secrets["SERPER_API_KEY"]
+    
+    # try:
+    #     if hasattr(st, "secrets") and "SERPER_API_KEY" in st.secrets:
+    #         return st.secrets["SERPER_API_KEY"]
+    # except:
+    #     pass
     return None
 
 def set_serper_api_key(value: str, persist: bool = True) -> None:
